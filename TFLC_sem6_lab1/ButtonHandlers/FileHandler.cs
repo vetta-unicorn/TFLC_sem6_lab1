@@ -8,7 +8,7 @@ namespace TFLC_sem6_lab1.ButtonHandlers
 {
     public class ProcessFile
     {
-        public string OpenTxtFile(RichTextBox InputTextBox, string currentFilePath)
+        public string OpenTxtFile(RichTextBox InputTextBox, RichTextBox OutputTextBox, string currentFilePath)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
@@ -26,8 +26,7 @@ namespace TFLC_sem6_lab1.ButtonHandlers
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Ошибка при чтении файла: " + ex.Message,
-                                      "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        OutputTextBox.Text = ex.Message;
                     }
                     finally { currentFilePath = openFileDialog.FileName; }
                 }
@@ -35,28 +34,27 @@ namespace TFLC_sem6_lab1.ButtonHandlers
             return currentFilePath;
         }
 
-        public void SaveTxtFile(RichTextBox InputTextBox, string currentFilePath, bool isOpened)
+        public void SaveTxtFile(RichTextBox InputTextBox, RichTextBox OutputTextBox, string currentFilePath, bool isOpened)
         {
             if (isOpened && !string.IsNullOrEmpty(currentFilePath))
             {
                 try
                 {
                     File.WriteAllText(currentFilePath, InputTextBox.Text);
-                    MessageBox.Show("Файл сохранен!", "Успех",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    OutputTextBox.Text = "Файл успешно сохранен!";
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка при сохранении: " + ex.Message);
+                    OutputTextBox.Text = ex.Message;
                 }
             }
             else
             {
-                SaveTxtFileAs(InputTextBox, currentFilePath, isOpened);
+                SaveTxtFileAs(InputTextBox, OutputTextBox, currentFilePath, isOpened);
             }
         }
 
-        public void SaveTxtFileAs(RichTextBox InputTextBox, string currentFilePath, bool isOpened)
+        public void SaveTxtFileAs(RichTextBox InputTextBox, RichTextBox OutputTextBox, string currentFilePath, bool isOpened)
         {
             if (!isOpened) { MessageBox.Show("Файл не открыт!"); return; }
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
@@ -75,13 +73,11 @@ namespace TFLC_sem6_lab1.ButtonHandlers
                         string textToSave = InputTextBox.Text;
 
                         File.WriteAllText(saveFileDialog.FileName, textToSave);
-                        MessageBox.Show("Файл успешно сохранен!", "Успех",
-                                      MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        OutputTextBox.Text = "Файл успешно сохранен!";
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Ошибка при сохранении файла: " + ex.Message,
-                                      "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        OutputTextBox.Text = ex.Message;
                     }
                 }
             }

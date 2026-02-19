@@ -11,6 +11,7 @@ namespace TFLC_sem6_lab1
     {
         private bool isOpened = false;
         private string currentFilePath = "";
+        private string fileText = "";
         ProcessFile processFile;
         private string userHelpPath = @"C:\Users\lisal\source\repos\TFLC_sem6_lab1\TFLC_sem6_lab1\HTML-files\HelpForm.html";
         private string aboutPath = @"C:\Users\lisal\source\repos\TFLC_sem6_lab1\TFLC_sem6_lab1\HTML-files\AboutForm.html";
@@ -21,6 +22,7 @@ namespace TFLC_sem6_lab1
             processFile = new ProcessFile();
             OutputTextBox.Enabled = false;
             InputTextBox.Enabled = false;
+
             SetEvent();
 
             foreach (ToolStripMenuItem item in InstrumentMenu.Items)
@@ -73,6 +75,7 @@ namespace TFLC_sem6_lab1
 
         private void CreateFile(object sender, EventArgs e)
         {
+            OutputTextBox.Text = "";
             isOpened = true;
             InputTextBox.Enabled = true;
             InputTextBox.Text = "";
@@ -80,24 +83,54 @@ namespace TFLC_sem6_lab1
 
         private void OpenFile(object sender, EventArgs e)
         {
+            OutputTextBox.Text = "";
             isOpened = true;
-            currentFilePath = processFile.OpenTxtFile(InputTextBox, currentFilePath);
+            currentFilePath = processFile.OpenTxtFile(InputTextBox, OutputTextBox, currentFilePath);
             InputTextBox.Enabled = true;
+            fileText = InputTextBox.Text;
         }
 
         private void SaveFile(object sender, EventArgs e)
         {
-            processFile.SaveTxtFile(InputTextBox, currentFilePath, isOpened);
+            OutputTextBox.Text = "";
+            processFile.SaveTxtFile(InputTextBox, OutputTextBox, currentFilePath, isOpened);
+            fileText = InputTextBox.Text;
         }
 
         private void SaveAsFile(object sender, EventArgs e)
         {
-            processFile.SaveTxtFileAs(InputTextBox, currentFilePath, isOpened);
+            OutputTextBox.Text = "";
+            processFile.SaveTxtFileAs(InputTextBox, OutputTextBox, currentFilePath, isOpened);
+            fileText = InputTextBox.Text;
         }
 
         private void ExitFromFile(object sender, EventArgs e)
         {
+            OutputTextBox.Text = "";
+            if (fileText != InputTextBox.Text)
+            {
+                OutputTextBox.Text = "Для выхода сохраните файл!";
+                return;
+            }
             processFile.ExitFile(InputTextBox);
+        }
+
+        private void ExitFromProgram(object sender, EventArgs e)
+        {
+            OutputTextBox.Text = "";
+            if (fileText != InputTextBox.Text)
+            {
+                OutputTextBox.Text = "Для выхода сохраните файл!";
+                return;
+            }
+            if (System.Windows.Forms.Application.MessageLoop)
+            {
+                System.Windows.Forms.Application.Exit();
+            }
+            else
+            {
+                System.Environment.Exit(1);
+            }
         }
 
         private void UndoText(object sender, EventArgs e)
@@ -191,9 +224,14 @@ namespace TFLC_sem6_lab1
             saveAsItem.Click += SaveAsFile;
             item.DropDownItems.Add(saveAsItem);
 
+            ToolStripMenuItem exitFileItem = new ToolStripMenuItem();
+            exitFileItem.Text = "Закрыть файл";
+            exitFileItem.Click += ExitFromFile;
+            item.DropDownItems.Add(exitFileItem);
+
             ToolStripMenuItem exitItem = new ToolStripMenuItem();
             exitItem.Text = "Выход";
-            exitItem.Click += ExitFromFile;
+            exitItem.Click += ExitFromProgram;
             item.DropDownItems.Add(exitItem);
         }
 
